@@ -290,7 +290,7 @@ class WAF
     * Return the IP from an already retrieved database record
     * 
     * @param array $record
-    * @return string
+    * @return string|null
     */
     public function get_ip_from_record( $record )
     {
@@ -351,20 +351,20 @@ class WAF
 
     /**
     * Block a list of IPs inserting them into the "Wordfence" chain set inside the constructor
-	*
+    *
     * @return void
     */
     public function block_all_ip()
     {
         if ( $this->simulation ) {
             $this->print_blocked_ips();
-		} else {
+	} else {
             $result = $this->get_firewall_blocks();
             foreach ( $result as $record ) {
                 $this->block_ip( $this->get_ip_from_record( $record ), $record );
             }
         }
-	} // block_all_ip
+    } // block_all_ip
 
 } // class WAF
 ?>

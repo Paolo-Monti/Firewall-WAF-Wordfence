@@ -17,7 +17,7 @@
     // If the file size is above 5MB, delete it before to write new content.
     // Loose rotation to prevent a file too big.
     $filename = __DIR__ . DIRECTORY_SEPARATOR . _ERROR_LOG_;
-    if ( flase != ($info = @stat( $filename ) ) {    
+    if ( false != ($info = @stat( $filename ) ) {    
        if ( ( $info['size'] / _5MB_ ) > 1 ) {
           unlink( $filename );
        }

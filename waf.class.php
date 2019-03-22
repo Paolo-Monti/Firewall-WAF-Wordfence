@@ -51,8 +51,7 @@ class WAF
     /*************************** PRIVATE METHODS ****************************/
                 
     /**
-    * Extract data using a regular expression
-    * Internal function
+    * Extract data using a regular expression    
     *
     * @param string $regex
     * @param string $subject
@@ -330,7 +329,7 @@ class WAF
 
     /**
     * Block an IP.
-    * The IP will be insterted into the "Wordfence" chain set inside the constructor
+    * The IP will be inserted into the "Wordfence" chain set inside the constructor
     *
     * @param string $ip
     * @param array $record

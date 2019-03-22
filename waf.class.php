@@ -342,6 +342,7 @@ class WAF
     {
         return empty( $this->whitelist ) ? false : false !== strpos( $this->whitelist, trim( $ip ) );
     } // is_ip_in_whitelist
+    
     /**
     * Block an IP.
     * The IP will be inserted into the "Wordfence" chain set inside the constructor
@@ -362,6 +363,7 @@ class WAF
             }
         }
     } // block_ip
+    
     /**
     * Block a list of IPs inserting them into the "Wordfence" chain set inside the constructor
     *
@@ -371,7 +373,7 @@ class WAF
     {
         if ( $this->simulation ) {
             $this->print_blocked_ips();
-    } else {
+        } else {
             $result = $this->get_firewall_blocks();
             foreach ( $result as $record ) {
                 $this->block_ip( $this->get_ip_from_record( $record ), $record );

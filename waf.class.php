@@ -90,7 +90,7 @@ class WAF
     /**
     * Check if an option read from the configuration file is enabled or not
     * 
-    * @param mixed $value
+    * @param string $index
     * @return boolean
     */
     private function is_option_on( $index, $default = false )
@@ -101,7 +101,7 @@ class WAF
     /**
     * Append a string to the log file
     *
-    * @param mixed $data
+    * @param string $data
     */
     private function append_to_log( $data )
     {
@@ -143,7 +143,7 @@ class WAF
     * the file name prepended with the current directory, otherwise it returns
     * the original path
     *
-    * @param mixed $path
+    * @param string $path
     * @return string
     */
     private function get_full_path( $path )

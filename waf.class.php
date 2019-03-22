@@ -1,16 +1,17 @@
 <?php
+
 namespace Firewall;
 
 require( 'library/iptables.class.php' );
 
 use \PDO;
-
 // Seconds in one minute * minutes in one hour * hours in a day = 60 * 60 * 24 = 86400
 define( '_ONE_DAY_IN_UNIX_', 86400 );
 
 class WAF
 {
     const 
+       db_error_message         = 'Could not extract Wordpress database %s from %s',
        // Options
        op_simulation            = 'simulation',
        op_debug                 = 'debug',
@@ -183,8 +184,9 @@ class WAF
     */
     public function __construct( $wp_config_file, $ini_file = self::default_ini_file_name )
     {
-        if ( !is_readable( $wp_config_file ) )
+        if ( !is_readable( $wp_config_file ) ) {
             throw new Exception( "The file '$wp_config_file' does not exist or could not be read" );
+        }
             
         $this->wp_config_file = $wp_config_file;
         
@@ -217,20 +219,34 @@ class WAF
         // Extract database name
         $regex = '/DB_NAME.*,\s*[\'"](.*\b)/i';
         $this->db_name = $this->extract_data( $regex, $file );
+        if ( empty( $this->db_name ) ) {
+            throw new Exception( sprintf( self::db_error_message, 'name', $this->wp_config_file ) );
+        }
         
         // Extract database user
         $regex = '/DB_USER.*,\s*[\'"](.*\b)/i';
         $this->db_user = $this->extract_data( $regex, $file );
+        if ( empty( $this->db_user ) ) {
+            throw new Exception( sprintf( self::db_error_message, 'user name', $this->wp_config_file ) );
+        }
         
         // Extract database password
         $regex = '/DB_PASSWORD.*,\s*[\'"](.*\b)/i';
         $this->db_password = $this->extract_data( $regex, $file );
+        if ( empty( $this->db_password ) ) {
+            throw new Exception( sprintf( self::db_error_message, 'password', $this->wp_config_file ) );
+        }
         
         // Extract database table prefix
         $regex = '/table_prefix\s*=\s*[\'"](.*\b)/i';
         $this->db_table_prefix = $this->extract_data( $regex, $file );
+        if ( empty( $this->db_table_prefix ) ) {
+            throw new Exception( sprintf( self::db_error_message, 'table prefix', $this->wp_config_file ) );
+        }
         
+        // Create the chain in iptables if does not exist yet
         $this->create_chain();
+        // Connect to the Wordpress database
         $this->db_connect();
     } // constructor
     
@@ -326,7 +342,6 @@ class WAF
     {
         return empty( $this->whitelist ) ? false : false !== strpos( $this->whitelist, trim( $ip ) );
     } // is_ip_in_whitelist
-
     /**
     * Block an IP.
     * The IP will be inserted into the "Wordfence" chain set inside the constructor
@@ -347,7 +362,6 @@ class WAF
             }
         }
     } // block_ip
-
     /**
     * Block a list of IPs inserting them into the "Wordfence" chain set inside the constructor
     *
@@ -357,13 +371,13 @@ class WAF
     {
         if ( $this->simulation ) {
             $this->print_blocked_ips();
-	} else {
+    } else {
             $result = $this->get_firewall_blocks();
             foreach ( $result as $record ) {
                 $this->block_ip( $this->get_ip_from_record( $record ), $record );
             }
         }
     } // block_all_ip
-
+    
 } // class WAF
 ?>

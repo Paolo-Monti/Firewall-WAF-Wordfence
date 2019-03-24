@@ -6,14 +6,19 @@
 
 declare -a sites=(/var/www/vhosts/blog /var/www/vhosts/portal /var/www/vhosts/eshop)
 
-# The following line is optional and it's useful to avoid too many IP blocked
-# It assumes that the chain chosen to add blocked IPs is named Wordfence
-
-iptables -F Wordfence &>/dev/null
+# The following lines are optional and they are useful to avoid too many blocked IP.
+# The default name Wordfence is assumed for the chain in case it was not possible
+# to extract it from the configuration file waf.ini
+###### BEGIN OPTIONAL #####
+ini="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"/waf.ini
+[ -f "$ini" ] && chain=$(sed  -e 's|\s*$||' -nre 's|chain=\s*(.*)|\1|p' "$ini")
+[ -z "$chain" ] && chain=Wordfence
+iptables -F "$chain" &>/dev/null
+#####  END OPTIONAL #####
 
 # Loop to check the Wordpress sites included inside the array above
 
 for i in ${sites[@]}
 do
-  php /your_path_to_this_package/waf.php "/$i/wp-config.php"
+  php /your_path_to_this_package/waf.php "$i/wp-config.php"
 done

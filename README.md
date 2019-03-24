@@ -16,3 +16,9 @@ This extension is able to access the database table where Wordfence logs the IP 
 After you have cloned this git on your server, you need to look inside the file waf.ini and, at least, make sure the path of iptables included inside your server is correctly set in waf.ini.
 You also need to edit the file waf.sh in order to set the paths of your websites you want to scan and the path where you installed this package (detailed instructions are included inside the file waf.sh). Also, make sure your bash shell is in /bin/bash, otherwise edit accordingly the "shebang" at the beginning of waf.sh.
 After that, it suffices scheduling as root user the execution of waf.sh by your crontab, running the task every 5 or 10 minutes.
+
+# Caveats
+
+First and foremost, before to schedule/run waf.sh, it's strongly recommended to populate the whitelist file with the IPs you want to exclude from blocking, especially if you manage your server by a remote SSH connection. This will prevent you to be locked out from your server.
+
+Second, if you decide to set/use a log file inside waf.ini, it's recommended to rotate it automatically by logrotate (or whatever you like to use for such task), cause its size can grow pretty quickly.

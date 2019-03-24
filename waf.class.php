@@ -20,11 +20,15 @@ class WAF
        op_chain                 = 'chain',
        op_whitelist             = 'whitelist',
        op_iptables              = 'iptables',
+       op_action                = 'action',
+       op_timezone              = 'timezone',
        op_waftable              = 'wordfence_table',
        op_log_name              = 'log',
        // Default values
        default_ini_file_name    = 'waf.ini',
        default_iptables         = '/sbin/iptables',
+       default_iptables_action  = 'DROP',
+       default_timezone         = 'UTC',
        default_whitelist_name   = 'whitelist',
        default_wordfence_chain  = 'Wordfence',
        default_wordfence_table  = 'wfBlockedIPLog',
@@ -41,6 +45,8 @@ class WAF
             $wp_config_file,    // File name of the Wordpress configuration file
             $ini_options,       // Content of the configuration file for the class
             $iptables,          // Iptables class instance
+            $action,            // Iptables action
+            $timezone,          // Timezone used for comments
             $wordfence_table,   // Name of the Wordfence table inside Wordpress database
             $debug,             // Debug option
             $simulation,        // Simulation option
@@ -63,6 +69,17 @@ class WAF
         preg_match( $regex, $subject, $matches );
         return empty( $matches[1] ) ? '' : $matches[1];
     } // extract_data
+    
+    /**
+    * Return a comment for the IP to block: date in ISO 8601 format.
+    * 
+    * @return string
+    */
+    private function get_comment_for_rule()
+    {
+        $date = new \DateTime( 'now', new \DateTimeZone( $this->timezone ) );
+        return sprintf( "'Added in date: %s'", $date->format( 'c' ) );
+    } // get_comment_for_rule
     
     /**
     * Return a record value in a safe way
@@ -107,7 +124,8 @@ class WAF
     private function append_to_log( $data )
     {
         if ( empty( $this->log_name ) ) return;
-        $message = sprintf( "[%s] %s\n", date( 'd-m-Y H:i' ), $data );
+        $date = new \DateTime( 'now', new \DateTimeZone( $this->timezone ) );
+        $message = sprintf( "[%s] %s\n", $date->format( 'd-m-Y H:i' ), $data );
         file_put_contents( $this->log_name, $message, FILE_APPEND | LOCK_EX );
     } // append_to_log
     
@@ -194,15 +212,17 @@ class WAF
         $file = $this->get_full_path( $ini_file );
         
         $this->ini_options      = parse_ini_file( $file );
+        $this->action           = $this->get_option( self::op_action, self::default_iptables_action );
+        $this->timezone         = $this->get_option( self::op_timezone, self::default_timezone );
         $this->interval         = $this->get_option( self::op_interval, self::default_interval );
         $this->chain            = $this->get_option( self::op_chain, self::default_wordfence_chain );        
         $this->block_count      = $this->get_option( self::op_block_count, self::default_block_count );
-        $this->wordfence_table  = $this->get_option( self::op_waftable, self::default_wordfence_table );
+        $this->wordfence_table  = $this->get_option( self::op_waftable, self::default_wordfence_table );        
         $this->debug            = $this->is_option_on( self::op_debug, false );
         $this->simulation       = $this->is_option_on( self::op_simulation, false );
-        $this->log_name         = $this->get_full_path( $this->get_option( self::op_log_name, self::default_log_name ) );
+        $this->log_name         = $this->get_full_path( $this->get_option( self::op_log_name, self::default_log_name ) );        
         $file                   = $this->get_full_path( self::op_whitelist, self::default_whitelist_name );        
-        
+                
         // Read the whitelist        
         $this->whitelist = file_get_contents( $file );
         if ( $this->debug ) {
@@ -325,9 +345,9 @@ class WAF
         if ( empty( $unixday ) ) {
             return null;
         } else {
-            $date = new DateTime( '1970-01-01' );
+            $date = new \DateTime( '1970-01-01' );
             $days = sprintf( 'P%dD', $unixday );
-            $date->add( new DateInterval( $days ) );
+            $date->add( new \DateInterval( $days ) );
             return $date->format( 'Y-m-d' );
         }
     } // get_date_from_record
@@ -354,8 +374,8 @@ class WAF
     public function block_ip( $ip, $record = null )
     {
         if ( $this->is_ip_in_whitelist( $ip ) ) return;
-        
-        if ( $this->iptables->block_ip_in_chain( $ip, $this->chain ) ) {            
+                
+        if ( $this->iptables->block_ip_in_chain( $ip, $this->chain, $this->action, $this->get_comment_for_rule() ) ) {
             if ( empty( $record ) ) {
                 $this->append_to_log( 'Blocked IP: ' . $ip );
             } else {

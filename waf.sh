@@ -11,7 +11,7 @@ declare -a sites=(/var/www/vhosts/blog /var/www/vhosts/portal /var/www/vhosts/es
 # to extract it from the configuration file waf.ini
 ###### BEGIN OPTIONAL #####
 ini="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"/waf.ini
-[ -f "$ini" ] && chain=$(sed  -e 's|\s*$||' -nre 's|chain=\s*(.*)|\1|p' "$ini")
+[ -f "$ini" ] && chain=$(sed -e 's|\s*$||' -nre 's|chain=\s*(.*)|\1|p' "$ini")
 [ -z "$chain" ] && chain=Wordfence
 iptables -F "$chain" &>/dev/null
 #####  END OPTIONAL #####

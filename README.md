@@ -4,7 +4,7 @@ Adding Iptables capabilites to Wordfence plugin for Wordpress
 
 # What is Wordfence?
 
-Wordfence is a plugin for Wordpress, supplied in a free and premium (i.e. paid) versions. It's a Web Application Firewall allowing the user to check the security of a Wordpress instance and it's useful to a number of security tasks (IP blocking by various rules, auditing, scans, etc.). You may found every detail about it on its dedicated website at https://www.wordfence.com/
+Wordfence is a plugin for Wordpress, supplied in a free and premium (i.e. paid) versions. It's a Web Application Firewall allowing the user to check the security of a Wordpress instance and it's useful to a number of security tasks (IP blocking by various rules, auditing, scans, etc.). You may find every detail about it on its dedicated website at https://www.wordfence.com/
 
 # The goal of this extension
 

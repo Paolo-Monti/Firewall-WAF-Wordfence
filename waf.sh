@@ -17,7 +17,7 @@ ini="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"/waf.ini
 iptables -F "$chain" &>/dev/null
 #####  END OPTIONAL #####
 
-# Loop to check the Wordpress sites included inside the array above
+# Loop to check the Wordpress sites included inside the array declared above
 
 for i in ${sites[@]}
 do

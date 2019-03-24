@@ -4,7 +4,7 @@
 # By example, here we are assuming you have your sites under the path /var/www/vhosts/
 # Hint: it would be useful creating symbolic links to shorten the paths
 
-declare -a sites=(/var/www/vhosts/blog /var/www/vhosts/portal /var/www/vhosts/eshop)
+declare -a sites=("/var/www/vhosts/blog" "/var/www/vhosts/portal" "/var/www/vhosts/eshop")
 
 # The following lines are optional and they are useful to avoid too many blocked IP.
 # The default name Wordfence is assumed for the chain in case it was not possible

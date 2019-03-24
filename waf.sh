@@ -10,7 +10,7 @@ declare -a sites=(/var/www/vhosts/blog /var/www/vhosts/portal /var/www/vhosts/es
 # The default name Wordfence is assumed for the chain in case it was not possible
 # to extract it from the configuration file waf.ini
 
-###### BEGIN OPTIONAL #####
+##### BEGIN OPTIONAL #####
 ini="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"/waf.ini
 [ -f "$ini" ] && chain=$(sed -e 's|\s*$||' -nre 's|chain=\s*(.*)|\1|p' "$ini")
 [ -z "$chain" ] && chain=Wordfence

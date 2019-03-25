@@ -192,7 +192,7 @@
           $regex = sprintf( '/^%s\s+.*%s/', $action, str_replace( '.', '\.', $ip ) );
           foreach ( $matches[0] as $match ) {              
               if ( 1 == preg_match( $regex, $match ) ) {
-                  $cmdline = sprintf( '-D -s %s -j %s', $ip, $chain );
+                  $cmdline = sprintf( '-D %s -s %s -j %s', $ip, $chain, $action );
                   if ( $this->cmd->run( $cmdline ) != 0 ) return false;
               }
           }

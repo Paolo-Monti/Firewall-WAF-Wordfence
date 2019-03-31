@@ -14,7 +14,7 @@ declare -a sites=("/var/www/vhosts/blog" "/var/www/vhosts/portal" "/var/www/vhos
 ini="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"/waf.ini
 [ -f "$ini" ] && chain=$(sed -e 's|\s*$||' -nre 's|\s*chain\s*=\s*(.*)|\1|p' "$ini")
 iptables -F "${chain:-Wordfence}" &>/dev/null
-#####  END OPTIONAL #####
+##### END OPTIONAL #####
 
 # Loop to check the Wordpress sites included inside the array declared above
 
